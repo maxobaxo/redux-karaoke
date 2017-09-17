@@ -26,6 +26,14 @@ const reducer = (state = initialState, action) => {
         currentPhrase: state.chorusArray[newPosition]
       }
       return newState;
+    case 'RESTART_SONG':
+      newState = {
+        chorusString: state.chorusString,
+        chorusArray: state.chorusArray,
+        arrayPosition: 0,
+        currentPhrase: state.chorusArray[0]
+      }
+      return newState;
     default:
       return state;
   }
@@ -48,6 +56,15 @@ expect(
   currentPhrase: chorusArray[1]
 });
 
+expect(
+  reducer({
+    chorusString: chorus,
+    chorusArray: chorusArray,
+    arrayPosition: 1,
+    currentPhrase: chorusArray[1]
+  }, { type: 'RESTART_SONG' })
+).toEqual(initialState);
+
 const { createStore } = Redux;
 const store = createStore(reducer);
 console.log(store.getState());
@@ -61,7 +78,13 @@ window.onload = function() {
 }
 
 const userClick = () => {
-  console.log('click');
+  const checkState = store.getState();
+  if (checkState.arrayPosition === checkState.chorusArray.length - 1) {
+    store.dispatch({ type: 'RESTART_SONG'});
+  } else {
+    store.dispatch({ type: 'NEXT LYRIC' })
+  }
   store.dispatch({ type: 'NEXT_LYRIC' });
   console.log(store.getState());
+  store.subscribe(render);
 }
